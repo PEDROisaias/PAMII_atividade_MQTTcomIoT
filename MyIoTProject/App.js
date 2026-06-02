@@ -1,7 +1,6 @@
-import React, { useState, useEffect, use } from "react";
-import { env } from 'expo-env'
+import React, { useState, useEffect } from "react";
 import { StyleSheet, View, Text } from 'react-native';
-import MQTTService from './src/services/MQTTService';
+import MQTTService from './src/services/mqttService';
 import StatusModal from './src/components/StatusModal';
 import LightControl from "./src/components/LightControl";
 import Gauges from "./src/components/Gauges";
@@ -15,12 +14,19 @@ export default function App() {
   const [temp, setTemp] = useState(0);
   const [humdty, setHumdty] = useState(0);
 
+  const getEnv = (key, def = '') => {
+    if (typeof process !== 'undefined' && process.env) {
+      return process.env[key] || process.env['REACT_APP_' + key] || process.env['EXPO_PUBLIC_' + key] || def;
+    }
+    return def;
+  };
+
   const mqttConfig = {
-    host: env.MQTT_HOST,
-    port: parseInt(env.MQTT_PORT),
-    path: env.MQTT_PATH,
-    user: env.MQTT_USER,
-    pass: env.MQTT_PASS,
+    host: getEnv('MQTT_HOST', ''),
+    port: parseInt(getEnv('MQTT_PORT', '1883')),
+    path: getEnv('MQTT_PATH', ''),
+    user: getEnv('MQTT_USER', ''),
+    pass: getEnv('MQTT_PASS', ''),
     clientId: 'RN_App_' + Math.random(),
   };
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { StyleSheet, View, Text, TouchableOpacity, Modal } from 'react-native';
+import storageService from '../services/storageService';
 
 const StatusModal = ({ visible, onRetry, onLater }) => {
     return (
@@ -16,7 +17,16 @@ const StatusModal = ({ visible, onRetry, onLater }) => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={styles.btnLater} onPress={onLater}>
-                        <Text style={styles.btnLater}> Tentar Mais Tarde</Text>
+                        <Text style={styles.btnText}> Tentar Mais Tarde</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.btnLater, {marginTop:12}]} onPress={async () => {
+                        try {
+                            await storageService.clearMessages();
+                            if (typeof onLater === 'function') onLater();
+                        } catch (e) { console.warn('clear messages error', e) }
+                    }}>
+                        <Text style={styles.btnText}> Limpar Histórico</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -27,14 +37,14 @@ const StatusModal = ({ visible, onRetry, onLater }) => {
 const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.85',
+        backgroundColor: 'rgba(0,0,0,0.85)',
         justifyContent: 'center',
         alignItems: 'center'
     },
 
     modalContent: {
         backgroundColor: '#222',
-        paddin: 30,
+        padding: 30,
         borderRadius: 20,
         width: '85%',
         alignItems: 'center',
@@ -71,3 +81,5 @@ const styles = StyleSheet.create({
         fontSize: 16
     }
 });
+
+export default StatusModal;
